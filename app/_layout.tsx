@@ -1,10 +1,9 @@
-import React from "react";
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{ headerTitleAlign: "center" }}>
-      <Stack.Screen name="index" options={{ title: "Cadastro" }} />
+    <Stack>
+      <Stack.Screen name="cadastro" options={{ headerShown: false }} />
     </Stack>
   );
 }
