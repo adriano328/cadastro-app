@@ -11,11 +11,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaskedTextInput } from "react-native-mask-text";
 
-import { globalStyles } from "../../src/styles/globalStyles";
+import { globalStyles } from "../../src/globalStyles";
 import { useCadastroForm } from "../../src/features/cadastro/useCadastroForm";
 import { DropdownField } from "../../src/components/dropdown/DropdownField";
 import { FormField } from "../../src/components/form/FormField";
 import { MUNICIPIOS_MT } from "../../src/data/municipiosMT";
+import CameraCapture from "../../src/components/camera/CameraCapture";
 
 export default function CadastroScreen() {
   const { formCadastro, setFormCadastro, touchField, showError, handleCadastrar } =
@@ -153,36 +154,33 @@ export default function CadastroScreen() {
             />
           </FormField>
 
-          <FormField label="Setor da Congregação" required error={setorCongrecaoError}>
-            <DropdownField
-              value={formCadastro.setorCongregacao}
-              placeholder="Selecione a congregação"
-              searchable
-              searchPlaceholder="Buscar setor da congregação..."
-              emptyText="Nada encontrado 😅"
-              options={[
-                { label: "Centro", value: "centro" },
-                { label: "Coxipó", value: "coxipo" },
-                { label: "CPA", value: "cpa" },
-              ]}
-              onChange={(setor) => setFormCadastro("setorCongregacao", setor)}
-              onBlur={() => touchField("setorCongregacao")}
-              invalid={setorCongrecaoInvalid}
+          <FormField required label="Atividade Profissional" error={showError("atividadeProfissional")}>
+            <TextInput
+              value={formCadastro.atividadeProfissional}
+              onChangeText={(atividade) => setFormCadastro("atividadeProfissional", atividade)}
+              onBlur={() => touchField("atividadeProfissional")}
+              style={globalStyles.campo}
+              returnKeyType="next"
             />
           </FormField>
 
-          <FormField label="Atividade Profissional" required error={atividadeError}>
-            <DropdownField
-              value={formCadastro.atividadeProfissional}
-              placeholder="Selecione o município"
-              options={[
-                { label: "Centro", value: "centro" },
-                { label: "Coxipó", value: "coxipo" },
-                { label: "CPA", value: "cpa" },
-              ]}
-              onChange={(atividade) => setFormCadastro("atividadeProfissional", atividade)}
-              onBlur={() => touchField("atividadeProfissional")}
-              invalid={atividadeInvalid}
+          <FormField required label="Setor Congregação" error={showError("setorCongregacao")}>
+            <TextInput
+              value={formCadastro.setorCongregacao}
+              onChangeText={(setor) => setFormCadastro("setorCongregacao", setor)}
+              onBlur={() => touchField("setorCongregacao")}
+              style={globalStyles.campo}
+              returnKeyType="next"
+            />
+          </FormField>
+
+          <FormField required label="Cargo Eclesiastico" error={showError("cargoEclesiastico")}>
+            <TextInput
+              value={formCadastro.cargoEclesiastico}
+              onChangeText={(cargo) => setFormCadastro("cargoEclesiastico", cargo)}
+              onBlur={() => touchField("cargoEclesiastico")}
+              style={globalStyles.campo}
+              returnKeyType="next"
             />
           </FormField>
 
@@ -222,6 +220,12 @@ export default function CadastroScreen() {
               secureTextEntry
               style={globalStyles.campo}
               returnKeyType="done"
+            />
+          </FormField>
+
+          <FormField label="Foto">
+            <CameraCapture
+              onCapture={(uri) => setFormCadastro("linkFoto", uri)}
             />
           </FormField>
 

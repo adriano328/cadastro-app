@@ -8,6 +8,7 @@ import {
 } from "./validators";
 import { Alert } from "react-native";
 import { salvarPessoa } from "../../services/pessoa";
+import { brDateToISO } from "../../utils/formataData";
 
 type TouchedState = Partial<Record<keyof Pessoa, boolean>>;
 
@@ -103,7 +104,15 @@ export function useCadastroForm() {
       return;
     }
 
-    salvarPessoa(formCadastro, controller.signal)
+    const payload: Pessoa = {
+      ...formCadastro,
+      dataNascimento: brDateToISO(formCadastro.dataNascimento) ?? "",
+      linkFoto: 'lslslslslsl'
+    };
+
+    console.log(payload);
+    
+    salvarPessoa(payload, controller.signal)
       .then(() => {
         Alert.alert("Sucesso!", "Membro cadastrado com sucesso!");
       })
@@ -141,7 +150,7 @@ export function useCadastroForm() {
     setFormCadastro,
     errors,
     touched,
-    submitted: submitAttempted, 
+    submitted: submitAttempted,
     touchField,
     showError,
     validate,
