@@ -1,33 +1,44 @@
 import React from "react";
-import { View, Text } from "react-native";
-import FieldError from "./FieldError";
-import { globalStyles } from "../../styles/globalStyles";
+import { StyleSheet, Text, View } from "react-native";
 
-type Props = {
+type FormFieldProps = {
   label: string;
   required?: boolean;
   error?: string;
   children: React.ReactNode;
 };
 
-export default function FormField({
-  label,
-  required,
-  error,
-  children,
-}: Props) {
+export function FormField({ label, required, error, children }: FormFieldProps) {
   return (
-    <View style={{ gap: 8 }}>
-      <Text style={globalStyles.nomeCampo}>
-        {label}
-        {required && (
-          <Text style={globalStyles.obrigatorio}> *</Text>
-        )}
+    <View style={styles.container}>
+      <Text style={styles.label}>
+        {label} {required && <Text style={styles.star}>*</Text>}
       </Text>
 
       {children}
 
-      <FieldError message={error} />
+      {!!error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+    gap: 8,
+  },
+  label: {
+    fontSize: 14,
+    color: "#5A5A5A",
+    fontWeight: "600",
+  },
+  star: {
+    color: "#D64545",
+    fontWeight: "700",
+  },
+  errorText: {
+    marginTop: 2,
+    fontSize: 12,
+    color: "#D64545",
+  },
+});

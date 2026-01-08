@@ -13,26 +13,21 @@ import { MaskedTextInput } from "react-native-mask-text";
 
 import { globalStyles } from "../../src/styles/globalStyles";
 import { useCadastroForm } from "../../src/features/cadastro/useCadastroForm";
-import FormField from "../../src/components/form/FormField";
+import { DropdownField } from "../../src/components/dropdown/DropdownField";
+import { FormField } from "../../src/components/form/FormField";
 
 export default function CadastroScreen() {
-  const {
-    formCadastro,
-    setFormCadastro,
-    validate,
-    touchField,
-    showError,
-  } = useCadastroForm();
+  const { formCadastro, setFormCadastro, touchField, showError, handleCadastrar } =
+    useCadastroForm();
 
-  function handleCadastrar() {
-    const result = validate();
-
-    // Se quiser, aqui você pode bloquear e mostrar alerta:
-    // if (!result.ok) {
-    //   Alert.alert("Ops", "Revise os campos obrigatórios.");
-    //   return;
-    // }
-  }
+  const municipioError = showError("municipioResidencia");
+  const municipioInvalid = !!municipioError;
+  const municipioCongrecaoError = showError("municipioCongregacao");
+  const municipioCongrecaoInvalid = !!municipioCongrecaoError;
+  const setorCongrecaoError = showError("setorCongregacao");
+  const setorCongrecaoInvalid = !!setorCongrecaoError;
+  const atividadeError = showError("setorCongregacao");
+  const atividadeInvalid = !!atividadeError;
 
   return (
     <SafeAreaView style={globalStyles.safe}>
@@ -58,18 +53,12 @@ export default function CadastroScreen() {
             />
           </FormField>
 
-          <FormField
-            label="Data de nascimento"
-            required
-            error={showError("dataNascimento")}
-          >
+          <FormField label="Data de nascimento" required error={showError("dataNascimento")}>
             <MaskedTextInput
               mask="99/99/9999"
               placeholder="DD/MM/AAAA"
               value={formCadastro.dataNascimento}
-              onChangeText={(dataNascimento) =>
-                setFormCadastro("dataNascimento", dataNascimento)
-              }
+              onChangeText={(dataNascimento) => setFormCadastro("dataNascimento", dataNascimento)}
               onBlur={() => touchField("dataNascimento")}
               style={globalStyles.campo}
               keyboardType="number-pad"
@@ -124,6 +113,77 @@ export default function CadastroScreen() {
             />
           </FormField>
 
+          <FormField label="Complemento" error={showError("complemento")}>
+            <TextInput
+              value={formCadastro.complemento}
+              onChangeText={(complemento) => setFormCadastro("complemento", complemento)}
+              onBlur={() => touchField("complemento")}
+              placeholder="Complemento"
+              style={globalStyles.campo}
+              returnKeyType="next"
+            />
+          </FormField>
+
+          <FormField label="Município de Residência" required error={municipioError}>
+            <DropdownField
+              value={formCadastro.municipioResidencia}
+              placeholder="Selecione o município"
+              options={[
+                { label: "Centro", value: "centro" },
+                { label: "Coxipó", value: "coxipo" },
+                { label: "CPA", value: "cpa" },
+              ]}
+              onChange={(municipio) => setFormCadastro("municipioResidencia", municipio)}
+              onBlur={() => touchField("municipioResidencia")}
+              invalid={municipioInvalid}
+            />
+          </FormField>
+
+          <FormField label="Município de Congregação" required error={municipioCongrecaoError}>
+            <DropdownField
+              value={formCadastro.municipioCongregacao}
+              placeholder="Selecione o município"
+              options={[
+                { label: "Centro", value: "centro" },
+                { label: "Coxipó", value: "coxipo" },
+                { label: "CPA", value: "cpa" },
+              ]}
+              onChange={(municipio) => setFormCadastro("municipioCongregacao", municipio)}
+              onBlur={() => touchField("municipioCongregacao")}
+              invalid={municipioCongrecaoInvalid}
+            />
+          </FormField>
+
+          <FormField label="Setor da Congregação" required error={setorCongrecaoError}>
+            <DropdownField
+              value={formCadastro.setorCongregacao}
+              placeholder="Selecione o município"
+              options={[
+                { label: "Centro", value: "centro" },
+                { label: "Coxipó", value: "coxipo" },
+                { label: "CPA", value: "cpa" },
+              ]}
+              onChange={(setor) => setFormCadastro("setorCongregacao", setor)}
+              onBlur={() => touchField("setorCongregacao")}
+              invalid={setorCongrecaoInvalid}
+            />
+          </FormField>
+
+          <FormField label="Atividade Profissional" required error={atividadeError}>
+            <DropdownField
+              value={formCadastro.atividadeProfissional}
+              placeholder="Selecione o município"
+              options={[
+                { label: "Centro", value: "centro" },
+                { label: "Coxipó", value: "coxipo" },
+                { label: "CPA", value: "cpa" },
+              ]}
+              onChange={(atividade) => setFormCadastro("atividadeProfissional", atividade)}
+              onBlur={() => touchField("atividadeProfissional")}
+              invalid={atividadeInvalid}
+            />
+          </FormField>
+
           <FormField label="E-mail" required error={showError("email")}>
             <TextInput
               value={formCadastro.email}
@@ -149,11 +209,7 @@ export default function CadastroScreen() {
             />
           </FormField>
 
-          <FormField
-            label="Confirmar senha"
-            required
-            error={showError("senhaConfirmacao")}
-          >
+          <FormField label="Confirmar senha" required error={showError("senhaConfirmacao")}>
             <TextInput
               value={formCadastro.senhaConfirmacao}
               onChangeText={(senhaConfirmacao) =>

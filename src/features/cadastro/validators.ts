@@ -1,8 +1,8 @@
-import type { CadastroFormState } from "./types";
+import { Pessoa } from "./types";
 
-export type CadastroErrors = Partial<Record<keyof CadastroFormState, string>>;
+export type CadastroErrors = Partial<Record<keyof Pessoa, string>>;
 
-export function validateCadastro(form: CadastroFormState): CadastroErrors {
+export function validateCadastro(form: Pessoa): CadastroErrors {
   const errors: CadastroErrors = {};
 
   if (!form.nome.trim()) errors.nome = "Informe seu nome.";
@@ -11,6 +11,7 @@ export function validateCadastro(form: CadastroFormState): CadastroErrors {
   if (!form.endereco.trim()) errors.endereco = "Informe seu endereco.";
   if (!form.bairro.trim()) errors.bairro = "Informe seu bairro.";
   if (!form.numero.trim()) errors.numero = "Informe o número.";
+  if (!form.municipioResidencia?.trim()) errors.municipioResidencia = "Campo obrigatório";
   if (!form.email.trim()) errors.email = "Informe seu e-mail.";
   if (!form.senha.trim()) errors.senha = "Informe sua senha.";
   if (!form.senhaConfirmacao) errors.senhaConfirmacao = "Confirme sua senha.";
@@ -22,8 +23,8 @@ export function validateCadastro(form: CadastroFormState): CadastroErrors {
   return errors;
 }
 
-export function validateField<K extends keyof CadastroFormState>(
-  form: CadastroFormState,
+export function validateField<K extends keyof Pessoa>(
+  form: Pessoa,
   key: K
 ): string | undefined {
   const all = validateCadastro(form);

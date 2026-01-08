@@ -1,26 +1,28 @@
 import { useMemo, useState } from "react";
-import { initialCadastroForm, type CadastroFormState } from "./types";
+import { initialCadastroForm, type Pessoa } from "./types";
 import {
   validateCadastro,
   validateField,
   hasErrors,
   type CadastroErrors,
 } from "./validators";
+import { Alert } from "react-native";
+import { salvarPessoa } from "../../services/pessoa";
 
-type TouchedState = Partial<Record<keyof CadastroFormState, boolean>>;
+type TouchedState = Partial<Record<keyof Pessoa, boolean>>;
 
 export function useCadastroForm() {
-  const [formCadastro, setForm] = useState<CadastroFormState>(initialCadastroForm);
+  const [formCadastro, setForm] = useState<Pessoa>(initialCadastroForm);
   const [errors, setErrors] = useState<CadastroErrors>({});
   const [touched, setTouched] = useState<TouchedState>({});
-  const [submitted, setSubmitted] = useState(false);
 
-  const setFormCadastro = <K extends keyof CadastroFormState>(key: K, value: CadastroFormState[K]) => {
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const setFormCadastro = <K extends keyof Pessoa>(key: K, value: Pessoa[K]) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
 
-      // Se já submeteu ou o campo já foi tocado, revalida em tempo real (fica esperto e rápido).
-      if (submitted || touched[key]) {
+      if (submitAttempted || touched[key]) {
         const msg = validateField(next, key);
 
         setErrors((prevErr) => {
@@ -29,7 +31,6 @@ export function useCadastroForm() {
           if (msg) nextErr[key] = msg;
           else delete nextErr[key];
 
-          // caso especial: senha altera validação da confirmação
           if (key === "senha" || key === "senhaConfirmacao") {
             const msgConfirm = validateField(next, "senhaConfirmacao");
             if (msgConfirm) nextErr.senhaConfirmacao = msgConfirm;
@@ -44,20 +45,23 @@ export function useCadastroForm() {
     });
   };
 
-  const touchField = <K extends keyof CadastroFormState>(key: K) => {
+  const touchField = <K extends keyof Pessoa>(key: K, nextValue?: Pessoa[K]) => {
     setTouched((prev) => ({ ...prev, [key]: true }));
 
-    // valida ao sair do campo
+    const snapshot =
+      nextValue !== undefined
+        ? ({ ...formCadastro, [key]: nextValue } as Pessoa)
+        : formCadastro;
+
     setErrors((prevErr) => {
-      const msg = validateField(formCadastro, key);
+      const msg = validateField(snapshot, key);
       const nextErr = { ...prevErr };
 
       if (msg) nextErr[key] = msg;
       else delete nextErr[key];
 
-      // caso especial senha/confirmacao (pra atualizar a msg quando sai do campo)
       if (key === "senha" || key === "senhaConfirmacao") {
-        const msgConfirm = validateField(formCadastro, "senhaConfirmacao");
+        const msgConfirm = validateField(snapshot, "senhaConfirmacao");
         if (msgConfirm) nextErr.senhaConfirmacao = msgConfirm;
         else delete nextErr.senhaConfirmacao;
       }
@@ -67,26 +71,46 @@ export function useCadastroForm() {
   };
 
   const validate = () => {
-    setSubmitted(true);
+    const nextErrors = validateCadastro(formCadastro);
+    setErrors(nextErrors);
+    return { ok: !hasErrors(nextErrors), errors: nextErrors };
+  };
 
-    // marca tudo como touched (pra aparecer tudo depois do submit)
-    setTouched({
+  function handleCadastrar() {
+    setSubmitAttempted(true);
+    setTouched((prev) => ({
+      ...prev,
       nome: true,
       dataNascimento: true,
       telefone: true,
       endereco: true,
       bairro: true,
       numero: true,
+      municipioResidencia: true,
+      municipioCongregacao: true,
+      setorCongregacao: true,
+      atividadeProfissional: true,
       email: true,
       senha: true,
       senhaConfirmacao: true,
-    });
+    }));
 
-    const nextErrors = validateCadastro(formCadastro);
-    setErrors(nextErrors);
+    const controller = new AbortController();
+    const result = validate();
 
-    return { ok: !hasErrors(nextErrors), errors: nextErrors };
-  };
+    if (!result.ok) {
+      Alert.alert("Ops", "Revise os campos obrigatórios.");
+      return;
+    }
+
+    salvarPessoa(formCadastro, controller.signal)
+      .then(() => {
+        Alert.alert("Sucesso!", "Membro cadastrado com sucesso!");
+      })
+      .catch(() => {
+        Alert.alert("Erro", "Não foi possível cadastrar.");
+      });
+  }
 
   const canSubmit = useMemo(() => {
     return (
@@ -95,28 +119,34 @@ export function useCadastroForm() {
       !!formCadastro.senha &&
       !!formCadastro.senhaConfirmacao
     );
-  }, [formCadastro.nome, formCadastro.email, formCadastro.senha, formCadastro.senhaConfirmacao]);
+  }, [
+    formCadastro.nome,
+    formCadastro.email,
+    formCadastro.senha,
+    formCadastro.senhaConfirmacao,
+  ]);
 
   const reset = () => {
     setForm(initialCadastroForm);
     setErrors({});
     setTouched({});
-    setSubmitted(false);
+    setSubmitAttempted(false);
   };
 
-  const showError = <K extends keyof CadastroFormState>(key: K) =>
-    (submitted || touched[key]) ? errors[key] : undefined;
+  const showError = <K extends keyof Pessoa>(key: K) =>
+    submitAttempted || touched[key] ? errors[key] : undefined;
 
   return {
     formCadastro,
     setFormCadastro,
     errors,
     touched,
-    submitted,
+    submitted: submitAttempted, 
     touchField,
-    showError, 
+    showError,
     validate,
     canSubmit,
     reset,
+    handleCadastrar,
   };
 }
