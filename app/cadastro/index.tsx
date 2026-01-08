@@ -15,6 +15,7 @@ import { globalStyles } from "../../src/styles/globalStyles";
 import { useCadastroForm } from "../../src/features/cadastro/useCadastroForm";
 import { DropdownField } from "../../src/components/dropdown/DropdownField";
 import { FormField } from "../../src/components/form/FormField";
+import { MUNICIPIOS_MT } from "../../src/data/municipiosMT";
 
 export default function CadastroScreen() {
   const { formCadastro, setFormCadastro, touchField, showError, handleCadastrar } =
@@ -128,11 +129,10 @@ export default function CadastroScreen() {
             <DropdownField
               value={formCadastro.municipioResidencia}
               placeholder="Selecione o município"
-              options={[
-                { label: "Centro", value: "centro" },
-                { label: "Coxipó", value: "coxipo" },
-                { label: "CPA", value: "cpa" },
-              ]}
+              options={MUNICIPIOS_MT}
+              searchable
+              searchPlaceholder="Buscar município..."
+              emptyText="Nada encontrado 😅"
               onChange={(municipio) => setFormCadastro("municipioResidencia", municipio)}
               onBlur={() => touchField("municipioResidencia")}
               invalid={municipioInvalid}
@@ -143,11 +143,10 @@ export default function CadastroScreen() {
             <DropdownField
               value={formCadastro.municipioCongregacao}
               placeholder="Selecione o município"
-              options={[
-                { label: "Centro", value: "centro" },
-                { label: "Coxipó", value: "coxipo" },
-                { label: "CPA", value: "cpa" },
-              ]}
+              options={MUNICIPIOS_MT}
+              searchable
+              searchPlaceholder="Buscar município..."
+              emptyText="Nada encontrado 😅"
               onChange={(municipio) => setFormCadastro("municipioCongregacao", municipio)}
               onBlur={() => touchField("municipioCongregacao")}
               invalid={municipioCongrecaoInvalid}
@@ -157,7 +156,10 @@ export default function CadastroScreen() {
           <FormField label="Setor da Congregação" required error={setorCongrecaoError}>
             <DropdownField
               value={formCadastro.setorCongregacao}
-              placeholder="Selecione o município"
+              placeholder="Selecione a congregação"
+              searchable
+              searchPlaceholder="Buscar setor da congregação..."
+              emptyText="Nada encontrado 😅"
               options={[
                 { label: "Centro", value: "centro" },
                 { label: "Coxipó", value: "coxipo" },
