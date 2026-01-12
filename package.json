@@ -1,33 +1,8 @@
 {
-  "name": "cadastro-app",
-  "version": "1.0.0",
-  "main": "index.ts",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
-  },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.2.0",
-    "@tanstack/react-query": "^5.90.16",
-    "axios": "^1.13.2",
-    "expo": "~54.0.31",
-    "expo-camera": "~17.0.10",
-    "expo-linking": "~8.0.11",
-    "expo-router": "~6.0.21",
-    "expo-status-bar": "~3.0.9",
-    "react": "19.1.0",
-    "react-native": "0.81.5",
-    "react-native-mask-text": "^0.15.0",
-    "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.16.0",
-    "zod": "^4.3.5",
-    "zustand": "^5.0.9"
-  },
-  "devDependencies": {
-    "@types/react": "~19.1.0",
-    "typescript": "~5.9.2"
-  },
-  "private": true
+    "@aws-amplify/ui-react": "^6.13.2",
+    "@aws-amplify/ui-react-core": "^3.4.7",
+    "@aws-amplify/ui-react-liveness": "^3.5.0",
+    "aws-amplify": "^6.15.9"
+  }
 }

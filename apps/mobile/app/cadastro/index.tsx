@@ -17,6 +17,7 @@ import { DropdownField } from "../../src/components/dropdown/DropdownField";
 import { FormField } from "../../src/components/form/FormField";
 import { MUNICIPIOS_MT } from "../../src/data/municipiosMT";
 import CameraCapture from "../../src/components/camera/CameraCapture";
+import { router } from "expo-router";
 
 export default function CadastroScreen() {
   const { formCadastro, setFormCadastro, touchField, showError, handleCadastrar } =
@@ -233,6 +234,14 @@ export default function CadastroScreen() {
             <TouchableOpacity style={globalStyles.botao} onPress={handleCadastrar}>
               <Text style={globalStyles.textoBotao}>Cadastrar</Text>
             </TouchableOpacity>
+            <View style={globalStyles.containerBotao}>
+              <TouchableOpacity
+                style={globalStyles.botao}
+                onPress={() => router.push("/cadastro/liveness")}
+              >
+                <Text style={globalStyles.textoBotao}>Abrir Liveness</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

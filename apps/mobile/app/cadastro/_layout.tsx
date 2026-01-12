@@ -4,6 +4,7 @@ export default function CadastroLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ title: "Cadastro" }} />
+      <Stack.Screen name="liveness" options={{ title: "Liveness" }} />
     </Stack>
   );
 }
