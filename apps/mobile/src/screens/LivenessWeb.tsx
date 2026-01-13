@@ -1,49 +1,33 @@
-import React, { useMemo, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { WebView, WebViewMessageEvent } from "react-native-webview";
-
-type PermissionRequestEvent = { grant: () => void };
+import React, { useMemo, useState, useEffect } from "react";
+import { View, Text } from "react-native";
+import { WebView } from "react-native-webview";
 
 export default function LivenessWeb() {
-  const httpsUrl = "https://lounge-farms-sig-informal.trycloudflare.com";
+  const httpsBase = "https://genetic-interventions-sugar-least.trycloudflare.com";
 
-  const [reloadKey, setReloadKey] = useState(0);
+  const [v] = useState(() => Date.now());
+  const uri = useMemo(() => `${httpsBase}/?v=${v}`, [httpsBase, v]);
 
-  const uri = useMemo(() => `${httpsUrl}/?v=${reloadKey}`, [reloadKey]);
+  useEffect(() => {
+    console.log("RN LivenessWeb URI:", uri);
+  }, [uri]);
 
   return (
     <View style={{ flex: 1 }}>
+      <Text style={{ padding: 8, fontSize: 12 }} numberOfLines={2}>
+        URI (deveria ser HTTPS): {uri}
+      </Text>
+
       <WebView
-        key={uri} // <-- força remontar e evita cache
+        key={uri}
+        cacheEnabled={false}
+        incognito
         source={{ uri }}
         javaScriptEnabled
         domStorageEnabled
-        originWhitelist={["*"]}
-        mixedContentMode="always"
-        allowsInlineMediaPlayback
-        mediaPlaybackRequiresUserAction={false}
-        onPermissionRequest={(event: PermissionRequestEvent) => event.grant()}
-        onLoadStart={() => console.log("WEBVIEW load start:", uri)}
-        onLoadEnd={() => console.log("WEBVIEW load end:", uri)}
-        onMessage={(event: WebViewMessageEvent) => {
-          try {
-            const data = JSON.parse(event.nativeEvent.data);
-            console.log("WEBVIEW MSG:", data);
-          } catch {
-            console.log("WEBVIEW RAW:", event.nativeEvent.data);
-          }
-        }}
+        onLoadStart={(e) => console.log("WEBVIEW load start:", e.nativeEvent.url)}
+        onLoadEnd={(e) => console.log("WEBVIEW load end:", e.nativeEvent.url)}
       />
-
-      {/* botão simples para forçar reload se necessário */}
-      <View style={{ position: "absolute", bottom: 24, right: 24 }}>
-        <TouchableOpacity
-          onPress={() => setReloadKey((k) => k + 1)}
-          style={{ padding: 10, backgroundColor: "#111", borderRadius: 10 }}
-        >
-          <Text style={{ color: "#fff" }}>Recarregar</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
